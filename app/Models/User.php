@@ -13,7 +13,7 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
-     * Mass assignable attributes
+     * The attributes that are mass assignable.
      */
     protected $fillable = [
         'name',
@@ -26,16 +26,16 @@ class User extends Authenticatable
     ];
 
     /**
-     * Hidden attributes (API response এ দেখাবে না)
+     * The attributes that should be hidden for serialization.
      */
     protected $hidden = [
         'password',
         'remember_token',
-        'face_descriptor', // Security: descriptor public করবো না
+        'face_descriptor', // Security: do not expose descriptor publicly
     ];
 
     /**
-     * Attribute casting
+     * The attributes that should be cast.
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
@@ -45,9 +45,9 @@ class User extends Authenticatable
     ];
 
     /**
-     * Face descriptor get করার সময় JSON decode করে array return করবে
-     * 
-     * @param string $value
+     * Decode face descriptor from JSON to array when accessed.
+     *
+     * @param string|null $value
      * @return array|null
      */
     public function getFaceDescriptorAttribute($value)
@@ -56,47 +56,47 @@ class User extends Authenticatable
     }
 
     /**
-     * Face descriptor set করার সময় array কে JSON encode করবে
-     * 
+     * Encode face descriptor to JSON when set.
+     *
      * @param array|string $value
      * @return void
      */
     public function setFaceDescriptorAttribute($value)
     {
-        $this->attributes['face_descriptor'] = is_array($value) 
-            ? json_encode($value) 
+        $this->attributes['face_descriptor'] = is_array($value)
+            ? json_encode($value)
             : $value;
     }
 
     /**
-     * Face image এর full URL return করবে
-     * 
+     * Get the full URL of the user's face image.
+     *
      * @return string|null
      */
-    public function getFaceImageUrlAttribute()
-    {
-        if (!$this->face_image) {
-            return null;
-        }
+    // public function getFaceImageUrlAttribute()
+    // {
+    //     if (!$this->face_image) {
+    //         return null;
+    //     }
 
-        return Storage::disk('public')->url($this->face_image);
-    }
+    //     return Storage::disk('public')->url($this->face_image);
+    // }
 
     /**
-     * Check করবে user এর face verification setup করা আছে কিনা
-     * 
+     * Check if the user has face verification data set up.
+     *
      * @return bool
      */
     public function hasFaceVerification(): bool
     {
-        return $this->face_verified && 
-               !empty($this->face_descriptor) && 
+        return $this->face_verified &&
+               !empty($this->face_descriptor) &&
                !empty($this->face_image);
     }
 
     /**
-     * User এর face image delete করবে
-     * 
+     * Delete the user's stored face image.
+     *
      * @return bool
      */
     public function deleteFaceImage(): bool
@@ -109,8 +109,8 @@ class User extends Authenticatable
     }
 
     /**
-     * Face verification data reset করবে
-     * 
+     * Reset the user's face verification data.
+     *
      * @return bool
      */
     public function resetFaceVerification(): bool
